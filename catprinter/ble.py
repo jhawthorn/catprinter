@@ -2,6 +2,7 @@ import asyncio
 from bleak import BleakClient, BleakError, BleakScanner
 from bleak.backends.scanner import AdvertisementData
 from bleak.backends.device import BLEDevice
+import time
 
 # For some reason, bleak reports the 0xaf30 service on my macOS, while it reports
 # 0xae30 (which I believe is correct) on my Raspberry Pi. This hacky workaround
@@ -61,5 +62,6 @@ async def run_ble(data, devicename, autodiscover, logger):
             f'⏳ Sending {len(data)} bytes of data in chunks of {chunk_size} bytes...')
         for i, chunk in enumerate(chunkify(data, chunk_size)):
             await client.write_gatt_char(TX_CHARACTERISTIC_UUID, chunk)
+            time.sleep(0.05)
         logger.info(f'✅ Done.')
         await asyncio.sleep(WAIT_AFTER_DATA_SENT_S)
